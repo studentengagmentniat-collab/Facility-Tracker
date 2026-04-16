@@ -63,32 +63,28 @@ export default function Tracker({ user, profile, onLogout }) {
     return () => supabase.removeChannel(ch);
   }, [fetchRequests]);
 
-  async function sendEmailNotification(req, newStatus, remarkText) {
-    const statusLabel = STAGES.find(s => s.key === newStatus)?.label || newStatus;
-    try {
-      await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Authorization': 're_dh9wXyp1_B5KvDVzw28TMc3ybFeqQ9yJ6', 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          from: 'Facility Tracker <onboarding@resend.dev>',
-          to: ['studentengagment.niat@gmail.com'],
-          subject: `[Facility Tracker] ${req.req_id} — ${statusLabel}`,
-          html: `<div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:24px;">
-            <h2 style="color:#111;margin-bottom:4px;">Facility Request Update</h2>
-            <p style="color:#666;font-size:14px;margin-bottom:20px;">Your request has been updated.</p>
-            <div style="background:#f9fafb;border-radius:10px;padding:16px;margin-bottom:16px;">
-              <div style="font-size:13px;color:#888;margin-bottom:4px;">${req.req_id} — ${req.title}</div>
-              <div style="font-size:16px;font-weight:600;color:#111;margin-bottom:8px;">Status: ${statusLabel}</div>
-              <div style="font-size:14px;color:#444;">${NOTIF_TEXT[newStatus] || ''}</div>
-              ${remarkText ? `<div style="margin-top:12px;padding:10px;background:#fff;border-radius:8px;font-size:13px;color:#555;border:1px solid #e5e7eb;">Remark: ${remarkText}</div>` : ''}
-            </div>
-            <div style="font-size:12px;color:#aaa;">Product: ${req.product_name} | Total: ₹${Number(req.total_cost).toLocaleString('en-IN')}</div>
-          </div>`
-        })
-      });
-    } catch (e) { console.log('Email error', e); }
-  }
-
+async function sendEmailNotification(req, newStatus, remarkText) {
+  const statusLabel = STAGES.find(s => s.key === newStatus)?.label || newStatus;
+  try {
+    await supabase.functions.invoke('send-email', {
+      body: {
+        to: 'studentengagment.niat@gmail.com',
+        subject: `[Facility Tracker] ${req.req_id} — ${statusLabel}`,
+        html: `<div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:24px;">
+          <h2 style="color:#111;margin-bottom:4px;">Facility Request Update</h2>
+          <p style="color:#666;font-size:14px;margin-bottom:20px;">Your request has been updated.</p>
+          <div style="background:#f9fafb;border-radius:10px;padding:16px;margin-bottom:16px;">
+            <div style="font-size:13px;color:#888;margin-bottom:4px;">${req.req_id} — ${req.title}</div>
+            <div style="font-size:16px;font-weight:600;color:#111;margin-bottom:8px;">Status: ${statusLabel}</div>
+            <div style="font-size:14px;color:#444;">${NOTIF_TEXT[newStatus] || ''}</div>
+            ${remarkText ? `<div style="margin-top:12px;padding:10px;background:#fff;border-radius:8px;font-size:13px;color:#555;border:1px solid #e5e7eb;">Remark: ${remarkText}</div>` : ''}
+          </div>
+          <div style="font-size:12px;color:#aaa;">Product: ${req.product_name} | Total: ₹${Number(req.total_cost).toLocaleString('en-IN')}</div>
+        </div>`
+      }
+    });
+  } catch (e) { console.log('Email error', e); }
+}
   async function advance(req) {
     const idx = STAGES.findIndex(s => s.key === req.status);
     if (idx >= STAGES.length - 1) return;
