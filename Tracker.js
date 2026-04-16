@@ -72,7 +72,7 @@ export default function Tracker({ user, profile, onLogout }) {
         body: JSON.stringify({
           from: 'Facility Tracker <onboarding@resend.dev>',
           to: [user.email],
-          subject: `[Facility Tracker] ${req.id} — ${statusLabel}`,
+          subject: `[Facility Tracker] ${req.req_id} — ${statusLabel}`,
           html: `<div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:24px;">
             <h2 style="color:#111;margin-bottom:4px;">Facility Request Update</h2>
             <p style="color:#666;font-size:14px;margin-bottom:20px;">Your request has been updated.</p>
@@ -138,11 +138,9 @@ export default function Tracker({ user, profile, onLogout }) {
   }
 
   const filtered = filter === 'all' ? requests : requests.filter(r => r.status === filter);
-
   const s = { fontFamily: 'Inter, sans-serif', padding: '1rem', maxWidth: '900px', margin: '0 auto' };
   const card = { background: '#fff', border: '1px solid #e8e8e8', borderRadius: '12px', padding: '1rem 1.25rem', marginBottom: '12px' };
   const btn = (color) => ({ border: `1px solid ${color}22`, background: color + '15', color, padding: '4px 10px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit' });
-  const inp = { width: '100%', padding: '8px 10px', fontSize: '13px', border: '1px solid #e0e0e0', borderRadius: '8px', marginTop: '3px', fontFamily: 'inherit', background: '#fff', color: '#111' };
 
   return (
     <div style={s}>
@@ -257,7 +255,7 @@ export default function Tracker({ user, profile, onLogout }) {
                   <div style={{ height: '100%', width: pct + '%', background: st.color, borderRadius: '2px', transition: 'width 0.3s' }} />
                 </div>
                 <div style={{ background: NOTIF_COLORS[r.status] || '#f9fafb', border: `1px solid ${st.color}30`, borderRadius: '8px', padding: '8px 10px', fontSize: '12px', color: NOTIF_TEXT_COLORS[r.status] || '#444', marginTop: '8px' }}>
-                  <span style={{ fontWeight: '500' }}>Status update — Notified: You &amp; Facility Team · </span>{NOTIF_TEXT[r.status]}
+                  <span style={{ fontWeight: '500' }}>Status update — Notified: You & Facility Team · </span>{NOTIF_TEXT[r.status]}
                 </div>
                 {lastRemark && <div style={{ marginTop: '6px', background: '#f9fafb', borderRadius: '8px', padding: '7px 10px', fontSize: '12px' }}><span style={{ color: '#888', fontWeight: '500' }}>{lastRemark.added_by}: </span>{lastRemark.text}</div>}
               </div>
@@ -266,20 +264,20 @@ export default function Tracker({ user, profile, onLogout }) {
         </div>
       )}
 
-      {modal && <ModalLayer modal={modal} onClose={() => setModal(null)} onAdvance={advance} onReject={reject} onRemark={submitRemark} onNew={submitNew} profile={profile} user={user} />}
+      {modal && <ModalLayer modal={modal} onClose={() => setModal(null)} onRemark={submitRemark} onNew={submitNew} profile={profile} user={user} />}
     </div>
   );
 }
 
-function ModalLayer({ modal, onClose, onRemark, onNew, profile, user }) {
+function ModalLayer({ modal, onClose, onRemark, onNew, profile }) {
   const [form, setForm] = useState({ dept: 'Admin', productName: '', productLink: '', cost: '', qty: '', notes: '', remark: '' });
   const [remarkText, setRemarkText] = useState('');
   const [remarkBy, setRemarkBy] = useState(profile?.name || 'Requester');
   const totalCost = (parseFloat(form.cost) || 0) * (parseInt(form.qty) || 0);
-  const inp = { width: '100%', padding: '8px 10px', fontSize: '13px', border: '1px solid #e0e0e0', borderRadius: '8px', marginTop: '3px', fontFamily: 'inherit', background: '#fff', color: '#111', boxSizing: 'border-box' };
 
+  const inp = { width: '100%', padding: '8px 10px', fontSize: '13px', border: '1px solid #e0e0e0', borderRadius: '8px', marginTop: '3px', fontFamily: 'inherit', background: '#fff', color: '#111', boxSizing: 'border-box' };
   const overlay = { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 1000, padding: '2rem 1rem', overflowY: 'auto' };
-  const box = { background: '#fff', borderRadius: '14px', padding: '1.5rem', width: '100%', maxWidth: '480px', position: 'relative' };
+  const box = { background: '#fff', borderRadius: '14px', padding: '1.5rem', width: '100%', maxWidth: '480px' };
 
   if (modal === 'new') return (
     <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
@@ -296,7 +294,6 @@ function ModalLayer({ modal, onClose, onRemark, onNew, profile, user }) {
         </div>
         <div style={{ marginTop: '10px' }}><label style={{ fontSize: '12px', color: '#666' }}>Reason / Notes</label>
           <textarea style={{ ...inp, marginTop: '3px' }} rows="2" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Why is this needed?" /></div>
-
         <div style={{ height: '1px', background: '#f0f0f0', margin: '14px 0' }} />
         <div style={{ fontSize: '11px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Product Details</div>
         <div><label style={{ fontSize: '12px', color: '#666' }}>Product name *</label>
@@ -311,11 +308,9 @@ function ModalLayer({ modal, onClose, onRemark, onNew, profile, user }) {
             <div style={{ fontSize: '16px', fontWeight: '600', color: '#16a34a' }}>₹{totalCost.toLocaleString('en-IN')}</div>
           </div>
         </div>
-
         <div style={{ height: '1px', background: '#f0f0f0', margin: '14px 0' }} />
         <div style={{ fontSize: '11px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Initial Remark</div>
         <textarea style={inp} rows="2" value={form.remark} onChange={e => setForm({ ...form, remark: e.target.value })} placeholder="Any comment for the facility team..." />
-
         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '16px' }}>
           <button onClick={onClose} style={{ padding: '8px 16px', border: '1px solid #e0e0e0', borderRadius: '8px', background: 'transparent', cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit' }}>Cancel</button>
           <button onClick={() => { if (!form.productName || !form.cost || !form.qty) return; onNew(form); }} style={{ padding: '8px 16px', background: '#1a73e8', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', fontWeight: '500', fontFamily: 'inherit' }}>Raise Request</button>
@@ -349,7 +344,6 @@ function ModalLayer({ modal, onClose, onRemark, onNew, profile, user }) {
 
   if (modal?.type === 'detail') {
     const r = modal.req;
-    const st = STAGES.find(s => s.key === r.status) || { label: 'Rejected', color: '#ef4444' };
     return (
       <div style={overlay} onClick={e => e.target === e.currentTarget && onClose()}>
         <div style={box}>
@@ -358,7 +352,6 @@ function ModalLayer({ modal, onClose, onRemark, onNew, profile, user }) {
             <button onClick={onClose} style={{ border: '1px solid #e0e0e0', background: 'transparent', borderRadius: '6px', padding: '3px 8px', cursor: 'pointer', fontSize: '12px', fontFamily: 'inherit' }}>Close</button>
           </div>
           <div style={{ fontSize: '12px', color: '#888', marginBottom: '12px' }}>{r.dept} · {new Date(r.created_at).toLocaleDateString('en-IN')}{r.pr_number ? ' · ' + r.pr_number : ''}</div>
-
           <div style={{ fontSize: '11px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Product Details</div>
           <div style={{ background: '#f9fafb', borderRadius: '10px', padding: '12px', marginBottom: '14px' }}>
             <div style={{ fontSize: '13px', fontWeight: '500', marginBottom: '8px' }}>{r.product_name}</div>
@@ -369,10 +362,8 @@ function ModalLayer({ modal, onClose, onRemark, onNew, profile, user }) {
             </div>
             {r.product_link && <a href={r.product_link} target="_blank" rel="noreferrer" style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '10px', background: '#eff6ff', color: '#1d4ed8', textDecoration: 'none' }}>View product link</a>}
           </div>
-
           {r.notes && <><div style={{ fontSize: '11px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>Notes</div>
             <div style={{ fontSize: '13px', padding: '8px 10px', background: '#f9fafb', borderRadius: '8px', marginBottom: '14px' }}>{r.notes}</div></>}
-
           <div style={{ fontSize: '11px', fontWeight: '600', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Remarks</div>
           {r.remarks?.length ? r.remarks.map((rk, i) => (
             <div key={i} style={{ background: '#f9fafb', borderRadius: '8px', padding: '8px 10px', marginBottom: '6px', fontSize: '12px' }}>
