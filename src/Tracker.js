@@ -298,7 +298,7 @@ function ModalLayer({ modal, onClose, onRemark, onNew, profile }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           <div><label style={{ fontSize: '12px', color: '#666' }}>Department</label>
             <select style={inp} value={form.dept} onChange={e => setForm({ ...form, dept: e.target.value })}>
-              {['Admin','IT','HR','Ops','Finance','Maintenance'].map(d => <option key={d}>{d}</option>)}
+              {['Student_Engagement Team'].map(d => <option key={d}>{d}</option>)}
             </select></div>
           <div><label style={{ fontSize: '12px', color: '#666' }}>Quantity *</label>
             <input style={inp} type="number" min="1" value={form.qty} onChange={e => setForm({ ...form, qty: e.target.value })} placeholder="e.g. 5" /></div>
