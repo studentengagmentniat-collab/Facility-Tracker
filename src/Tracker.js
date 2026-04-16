@@ -153,12 +153,12 @@ export default function Tracker({ user, profile, onLogout }) {
           <button style={btn('#6366f1')} onClick={() => { setView(view === 'updates' ? 'main' : 'updates'); if (view !== 'updates') setUnread(0); }}>
             Updates {unread > 0 && <span style={{ background: '#ef4444', color: '#fff', borderRadius: '10px', padding: '1px 5px', fontSize: '10px', marginLeft: '3px' }}>{unread}</span>}
           </button>
-          {profile?.role === 'student_engagement' && <button style={btn('#1a73e8')} onClick={() => setModal('new')}>+ New Request</button>}
+          {profile?.role !== 'facility' && <button style={btn('#1a73e8')} onClick={() => setModal('new')}>+ New Request</button>}
           <button style={btn('#888')} onClick={onLogout}>Logout</button>
         </div>
       </div>
 
-      {profile?.role === 'student_engagement' && (
+      {profile?.role !== 'facility' && (
         <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '8px 12px', fontSize: '12px', color: '#1e40af', marginBottom: '1rem' }}>
           You can raise requests and add remarks. Only the Facility Team can advance or reject requests.
         </div>
