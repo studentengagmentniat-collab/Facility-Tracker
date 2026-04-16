@@ -71,7 +71,7 @@ export default function Tracker({ user, profile, onLogout }) {
         headers: { 'Authorization': 're_dh9wXyp1_B5KvDVzw28TMc3ybFeqQ9yJ6', 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: 'Facility Tracker <onboarding@resend.dev>',
-          to: [user.email],
+          to: ['studentengagment.niat@gmail.com'],
           subject: `[Facility Tracker] ${req.req_id} — ${statusLabel}`,
           html: `<div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:24px;">
             <h2 style="color:#111;margin-bottom:4px;">Facility Request Update</h2>
