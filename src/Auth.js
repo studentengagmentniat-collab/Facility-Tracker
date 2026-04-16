@@ -57,9 +57,7 @@ export default function Auth() {
               <div style={{ marginBottom: '12px' }}>
                 <label style={labelStyle}>Role</label>
                 <select style={inputStyle} value={role} onChange={e => setRole(e.target.value)}>
-                  <option value="requester">Requester</option>
-                  <option value="manager">Facility Manager</option>
-                  <option value="finance">Finance</option>
+                  <option value="requester">Student Engagement Team</option>
                   <option value="facility">Facility Team</option>
                 </select>
               </div>
